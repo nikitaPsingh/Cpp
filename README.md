@@ -59,7 +59,7 @@ cout << "Hello";
 Namespaces prevent naming conflicts between different libraries.
 
 ### NOTE
-- We shouldn't usig namespace in large projects because it imports all names from the Standard Library into the global namespace, increasing the risk of name collisions.
+- We shouldn't use namespace in large projects because it imports all names from the Standard Library into the global namespace, increasing the risk of name collisions.
 - The `<<` operator is called the **stream insertion operator**.
 
 ## Compilation Process
@@ -87,12 +87,12 @@ Executable Program
 
 1. Preprocessor: Processes directives such as #include, #define...
 
-3. Compiler: Converts C++ source code into Assembly Language.
+2. Compiler: Converts C++ source code into Assembly Language.
    - Assembly language is human readable.
 
-5. Assembler: Converts Assembly Language into Machine Code(0s and 1s) using an assembler.
+3. Assembler: Converts Assembly Language into Machine Code(0s and 1s) using an assembler.
 
-6. Linker: Links object files(our code) with required libraries.->Produces the executable program.
+4. Linker: Links object files(our code) with required libraries.->Produces the executable program.
    - The linker combines object files and libraries into one executable file.
 
 ## Tokens in C++
@@ -117,7 +117,7 @@ A blueprint for creating functions or classes that can operate with any data typ
 
 2 types of templates:
 
-1. ## Function Templates
+##1. Function Templates
 
 Allows a single function to work with multiple data types.
 
@@ -200,7 +200,7 @@ Array<int,10> obj;
 - T is a type parameter
 - 10 is a non type template parameter
   
-3. ## Class Templates
+##2. Class Templates
 Templates can also create generic classes.
 
 Example

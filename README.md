@@ -122,7 +122,7 @@ A blueprint for creating functions or classes that can operate with any data typ
 Allows a single function to work with multiple data types.
 
 Syntax
-```
+```cpp
 template <typename T>
 return_type function_name(parameters)
 {
@@ -130,12 +130,12 @@ return_type function_name(parameters)
 }
 ```
 or
-```
+```cpp
 template <class T>
 ```
 
 Example
-```
+```cpp
 #include <iostream>
 using namespace std;
 
@@ -167,7 +167,7 @@ This is called **template instantiation**.
 ### Multiple Template Parameters
 Templates can have more than one type.
 
-```
+```cpp
 template<typename T, typename U>
 void display(T a, U b)
 {
@@ -176,7 +176,7 @@ void display(T a, U b)
 ```
 
 Usage
-```
+```cpp
 display(10,3.14);
 
 display("Age",25);
@@ -185,7 +185,7 @@ display("Age",25);
 ### Non-Type Template Parameters
 Templates can also take constant values
 
-```
+```cpp
 template<typename T, int size>
 class Array
 {
@@ -194,7 +194,7 @@ class Array
 ```
 
 Usage
-```
+```cpp
 Array<int,10> obj;
 ```
 - T is a type parameter
@@ -204,7 +204,7 @@ Array<int,10> obj;
 Templates can also create generic classes.
 
 Example
-```
+```cpp
 #include <iostream>
 using namespace std;
 
@@ -248,7 +248,7 @@ Before templates, generic code often used void*. void* is a universal pointer. I
 ## Template Instantiation
 The compiler generates actual functions or classes only when they are used.
 
-```
+```cpp
 template<typename T>
 T square(T x)
 {
@@ -257,22 +257,22 @@ T square(T x)
 ```
 
 Calling
-```
+```cpp
 square(5);
 ```
 
 generates
-```
+```cpp
 int square(int x)
 ```
 
 Calling 
-```
+```cpp
 square(2.5);
 ```
 
 generates
-```
+```cpp
 double square(double x)
 ```
 
@@ -280,7 +280,7 @@ double square(double x)
 Sometimes the generic implementation is not suitable for a particular type.
 
 Generic Template
-```
+```cpp
 template<typename T>
 void print(T value)
 {
@@ -289,7 +289,7 @@ void print(T value)
 ```
 
 Specialization for char*
-```
+```cpp
 template<>
 void print<char*>(char* value)
 {
@@ -298,7 +298,7 @@ void print<char*>(char* value)
 ```
 
 Usage
-```
+```cpp
 print(10);
 
 print("Hello");

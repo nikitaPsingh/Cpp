@@ -14,8 +14,6 @@ It supports multiple programming paradigms:
 - Generic Programming (Templates): Code that works with multiple data types without rewriting the same logic.
 - Functional Programming (Lambdas): Instead of creating a separate function we create it on spot.
 
----
-
 ## Applications of C++
 
 C++ is widely used in:
@@ -31,8 +29,6 @@ C++ is widely used in:
 - Robotics
 - Competitive Programming
 
----
-
 ## Structure of a C++ Program
 
 ### `#include <iostream>`
@@ -42,7 +38,6 @@ A **preprocessor directive** that includes the input-output stream library.
 - A preprocessor is a program that runs before the compiler.
 - Copies everything from the iostream library to this file before compiling.
 - iostream is a header file that contains definition for cout, cin, cerr, clog.
----
 
 ### `using namespace std;`
 

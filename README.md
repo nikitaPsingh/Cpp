@@ -110,3 +110,205 @@ A token is the smallest meaningful unit of a program.
 - String Literals: Sequence of characters in "". -> "Yo"
 - Statements: An instruction executed by the program. Basically each line in a code.
 - Block: Group of statments in braces({})
+
+# Templates
+
+A blueprint for creating functions or classes that can operate with any data type.
+
+2 types of templates:
+
+1. ## Function Templates
+
+Allows a single function to work with multiple data types.
+
+Syntax
+```
+template <typename T>
+return_type function_name(parameters)
+{
+    // code
+}
+```
+or
+```
+template <class T>
+```
+
+Example
+```
+#include <iostream>
+using namespace std;
+
+template <typename T>
+T add(T a, T b)
+{
+     return a + b;
+}
+
+int main(){
+     cout << add(5, 10) << endl; // or add<int>(5, 7(;
+     cout << add(2.5, 3.7) << endl; // or add<double>(2.5, 4.8);
+
+     return 0;
+}
+```
+Output
+```
+15
+6.2
+```
+
+Explanation
+- add(5, 10) -> compiler generates int add(int a, int b)
+- add(2.5, 3.7) -> compiler generates double add(double a, double b)
+
+This is called **template instantiation**.
+
+### Multiple Template Parameters
+Templates can have more than one type.
+
+```
+template<typename T, typename U>
+void display(T a, U b)
+{
+    cout << a << " " << b;
+}
+```
+
+Usage
+```
+display(10,3.14);
+
+display("Age",25);
+```
+
+### Non-Type Template Parameters
+Templates can also take constant values
+
+```
+template<typename T, int size>
+class Array
+{
+    T arr[size];
+};
+```
+
+Usage
+```
+Array<int,10> obj;
+```
+- T is a type parameter
+- 10 is a non type template parameter
+  
+3. ## Class Templates
+Templates can also create generic classes.
+
+Example
+```
+#include <iostream>
+using namespace std;
+
+template<typename T>
+class Calculator
+{
+    T a, b;
+
+public:
+
+    Calculator(T x, T y)
+    {
+        a = x;
+        b = y;
+    }
+
+    T add()
+    {
+        return a + b;
+    }
+};
+
+int main()
+{
+    Calculator<int> c1(10,20);
+
+    cout << c1.add();
+
+    Calculator<double> c2(5.5,3.2);
+
+    cout << c2.add();
+}
+
+// Output
+// 10
+// 8.7
+```
+
+Before templates, generic code often used void*. void* is a universal pointer. It is a generic pointer type that can hold the memory address of any data type. This is C style programming.
+
+## Template Instantiation
+The compiler generates actual functions or classes only when they are used.
+
+```
+template<typename T>
+T square(T x)
+{
+    return x*x;
+}
+```
+
+Calling
+```
+square(5);
+```
+
+generates
+```
+int square(int x)
+```
+
+Calling 
+```
+square(2.5);
+```
+
+generates
+```
+double square(double x)
+```
+
+## Template Specialization
+Sometimes the generic implementation is not suitable for a particular type.
+
+Generic Template
+```
+template<typename T>
+void print(T value)
+{
+    cout << value;
+}
+```
+
+Specialization for char*
+```
+template<>
+void print<char*>(char* value)
+{
+    cout << "String: " << value;
+}
+```
+
+Usage
+```
+print(10);
+
+print("Hello");
+```
+
+Output
+```
+10
+
+String: Hello
+```
+
+

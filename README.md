@@ -117,7 +117,7 @@ A blueprint for creating functions or classes that can operate with any data typ
 
 2 types of templates:
 
-##1. Function Templates
+## 1. Function Templates
 
 Allows a single function to work with multiple data types.
 
@@ -200,7 +200,7 @@ Array<int,10> obj;
 - T is a type parameter
 - 10 is a non type template parameter
   
-##2. Class Templates
+## 2. Class Templates
 Templates can also create generic classes.
 
 Example

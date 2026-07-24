@@ -182,6 +182,17 @@ display(10,3.14);
 display("Age",25);
 ```
 
+#### NOTE
+```cpp
+template<typename T>
+T add(T a,T b)
+{
+    return a+b;
+}
+
+add(5,4.5);
+```
+Results into an error. Use Multiple Template.
 ### Non-Type Template Parameters
 Templates can also take constant values
 
@@ -242,8 +253,11 @@ int main()
 // 10
 // 8.7
 ```
-
-Before templates, generic code often used void*. void* is a universal pointer. It is a generic pointer type that can hold the memory address of any data type. This is C style programming.
+- For classes you must specify the type:
+```cpp
+Box<int> obj(10);
+```
+- Before templates, generic code often used void*. void* is a universal pointer. It is a generic pointer type that can hold the memory address of any data type. This is C style programming.
 
 ## Template Instantiation
 The compiler generates actual functions or classes only when they are used.
@@ -475,4 +489,5 @@ Output
 ```
 20
 ```
+
 

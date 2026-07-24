@@ -311,4 +311,168 @@ Output
 String: Hello
 ```
 
+## Template Inheritance
+
+### 1. Class template inherits from another class template (mixins)
+
+Syntax
+```cpp
+template <typename T>
+class Base
+{
+public:
+    void display()
+    {
+        cout << "Base class" << endl;
+    }
+};
+
+template <typename T>
+class Derived : public Base<T>
+{
+public:
+    void show()
+    {
+        cout << "Derived class" << endl;
+    }
+};
+```
+
+Example
+```cpp
+#include <iostream>
+using namespace std;
+
+template <typename T>
+class Base
+{
+protected:
+    T data;
+
+public:
+    Base(T x)
+    {
+        data = x;
+    }
+
+    void display()
+    {
+        cout << "Data = " << data << endl;
+    }
+};
+
+template <typename T>
+class Derived : public Base<T>
+{
+public:
+    Derived(T x) : Base<T>(x)
+    {
+    }
+
+    void square()
+    {
+        cout << "Square = " << this->data * this->data << endl;
+    }
+};
+
+int main()
+{
+    Derived<int> obj(5);
+
+    obj.display();
+    obj.square();
+
+    return 0;
+}
+```
+
+Output 
+```
+Data = 5
+Square = 25
+```
+
+### 2. Class Template Inheriting from Normal class
+```cpp
+#include <iostream>
+using namespace std;
+
+class Person
+{
+public:
+    void introduce()
+    {
+        cout << "I am a person." << endl;
+    }
+};
+
+template <typename T>
+class Student : public Person
+{
+    T marks;
+
+public:
+    Student(T m)
+    {
+        marks = m;
+    }
+
+    void showMarks()
+    {
+        cout << "Marks = " << marks << endl;
+    }
+};
+
+int main()
+{
+    Student<float> s(89.5);
+
+    s.introduce();
+    s.showMarks();
+}
+```
+Output
+```
+I am a person.
+Marks = 89.5
+```
+
+### 3. Normal Class Inheriting from Template Class
+```cpp
+template <typename T>
+class Base
+{
+public:
+    T value;
+
+    Base(T v)
+    {
+        value = v;
+    }
+};
+
+class Derived : public Base<int>
+{
+public:
+    Derived(int x) : Base<int>(x)
+    {
+    }
+
+    void print()
+    {
+        cout << value << endl;
+    }
+};
+
+int main()
+{
+    Derived obj(20);
+    obj.print();
+}
+```
+
+Output
+```
+20
+```
 

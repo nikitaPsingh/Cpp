@@ -401,7 +401,7 @@ template <typename T>
 class Derived : public Base<T>
 {
 public:
-    Derived(T x) : Base<T>(x)
+    Derived(T x) : Base<T>(x) // Before constructing Derived call Base<T>'s constructor. ':Base<T>' is the 'Derived<T>' constructor's initializer list.
     {
     }
 

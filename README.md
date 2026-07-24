@@ -111,6 +111,66 @@ A token is the smallest meaningful unit of a program.
 - Statements: An instruction executed by the program. Basically each line in a code.
 - Block: Group of statments in braces({})
 
+
+## Constructor Initializer List
+
+A **constructor initializer list** is a special syntax used to **initialize data members and base classes before the constructor body executes**.
+
+### Syntax
+
+```cpp
+ClassName(parameters)
+    : member1(value1), member2(value2)
+{
+    // Constructor body
+}
+```
+
+The part after the colon (`:`) is called the **constructor initializer list**.
+
+### Without Initializer List
+
+```cpp
+class Student
+{
+    int age;
+
+public:
+    Student(int a)
+    {
+        age = a;
+    }
+};
+```
+
+```text
+Create age (default initialization)
+      ↓
+Assign age = a
+```
+
+---
+
+### With Initializer List
+
+```cpp
+class Student
+{
+    int age;
+
+public:
+    Student(int a)
+        : age(a)
+    {
+    }
+};
+```
+```text
+Create age with value a (age is directly initialialized with 'a'
+```
+
+No extra assignment is performed.
+
 # Templates
 
 A blueprint for creating functions or classes that can operate with any data type.

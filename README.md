@@ -257,6 +257,7 @@ int main()
 ```cpp
 Box<int> obj(10);
 ```
+If not specified, default: int
 - Before templates, generic code often used void*. void* is a universal pointer. It is a generic pointer type that can hold the memory address of any data type. This is C style programming.
 
 ## Template Instantiation
@@ -293,38 +294,59 @@ double square(double x)
 ## Template Specialization
 Sometimes the generic implementation is not suitable for a particular type.
 
-Generic Template
+Example:
 ```cpp
+#include <iostream>
+using namespace std;
+
+// Generic Template
 template<typename T>
-void print(T value)
+class Printer
 {
-    cout << value;
-}
-```
+public:
 
-Specialization for char*
-```cpp
+    void print()
+    {
+        cout<<"Generic Printer"<<endl;
+    }
+};
+
+// Specialization
 template<>
-void print<char*>(char* value)
+class Printer<char>
 {
-    cout << "String: " << value;
+public:
+
+    void print()
+    {
+        cout<<"Character Printer"<<endl;
+    }
+};
+
+int main()
+{
+    Printer<int> p1;
+
+    Printer<double> p2;
+
+    Printer<char> p3;
+
+    p1.print();
+
+    p2.print();
+
+    p3.print();
 }
 ```
 
-Usage
-```cpp
-print(10);
-
-print("Hello");
+Output:
 ```
+Generic Printer
 
-Output
+Generic Printer
+
+Character Printer
 ```
-10
-
-String: Hello
-```
-
 ## Template Inheritance
 
 ### 1. Class template inherits from another class template (mixins)
@@ -490,4 +512,41 @@ Output
 20
 ```
 
+## Template Type Deduction in C++
 
+Template type deduction is the process where the compiler automatically determines the template type based on the function argument.
+
+### Example 1
+
+```cpp
+func(10);
+```
+
+- `10` is of type `int`
+- **Deduced type:** `T = int`
+
+### Example 2
+
+```cpp
+std::string s = "Hello";
+func(s);
+```
+
+- `s` is of type `std::string`
+- **Deduced type:** `T = std::string`
+
+### Example 3
+
+```cpp
+func("Hello");
+```
+- `"Hello"` is of type `const char[6]`
+- When passed by value, it decays to `const char*`
+
+**Deduced type:**
+
+```cpp
+T = const char*
+```
+
+> **Note:** String literals are **not** `std::string`; they are character arrays that usually decay to pointers.

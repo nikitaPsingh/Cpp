@@ -932,3 +932,177 @@ int main()
     }
 }
 ```
+
+# Casting
+Converting one data type to another.
+
+## Types of Casting
+
+## 1. Implicit Casting (Automatic)
+Compiler does it
+
+Example
+```cpp
+char ch = 'A';
+
+int x = ch;
+```
+Output
+```
+65
+```
+'A' -> ASCII -> 65
+
+## 2. Ezplicit Casting (Manual)
+
+Example
+```cpp
+double x = 5.8;
+
+int y = (int)x;
+```
+Output
+```
+5
+```
+Better
+```cpp
+int y = static_cast<int>(x);
+```
+
+**NOTE**
+```cpp
+int a = 5;
+int b = 2;
+
+double c = a / b;
+```
+Output is 2, not 2.5 because 5/2(both are integers). Integer division happens first and rhen it is converted to a double.
+
+Correct
+```cpp
+double c = (double)a / b;
+```
+
+## Types of Casts in C++
+There are four C++ casting operators.
+```
+static_cast
+dynamic_cast
+const_cast
+reinterpret_cast
+```
+
+## 1. static_cast
+#### int-> double
+```cpp
+int x = 5;
+
+double y = static_cast<double>(x);
+
+//Output: 5->5.0
+```
+
+#### double -> int
+```cpp
+double x = 5.9;
+
+int y = static_cast<int>(x);
+
+//Output: 5
+```
+
+#### float -> int
+```cpp
+float f = 7.8f;
+
+int x = static_cast<int>(f);
+
+//Output: 7
+```
+
+#### char -> int
+```cpp
+char ch = 'A';
+
+int x = static_cast<int>(ch);
+
+//Output: 65
+```
+
+#### int -> char
+```cpp
+int x = 66;
+
+char ch = static_cast<char>(x);
+
+cout << ch;
+
+//Output: B
+```
+
+### static_cast in OOP
+#### Upcasting
+Upcasting is the process of converting a derived class pointer/reference to a base class pointer/reference. 
+Example
+```cpp
+class Animal
+{
+public:
+    void eat()
+    {
+        cout << "Eating";
+    }
+};
+
+class Dog : public Animal
+{
+public:
+    void bark()
+    {
+        cout << "Barking";
+    }
+};
+```
+Create a dog
+```cpp
+Dog d;
+```
+Now
+```cpp
+Animal* ptr = &d;
+```
+or
+```cpp
+Animal* ptr = static_cast<Animal*>(&d);
+```
+This is upcasting. The compiler automatically converts Dog* to Animal*.
+
+##### NOTE
+ptr->eat() is correct. ptr->bark() is wrong. Because compiler only ptr is an Animal*. Even though the object is actually a Dog, the pointer's type controls what members are directly accessible.
+
+#### Downcasting
+Downcasting is the process of converting a base class pointer/reference to a derived class pointer/reference.
+
+Upcasting
+```cpp
+Dog* → Animal*
+```
+Downcasting
+```cpp
+Animal* → Dog*
+```
+
+Suppose
+```cpp
+Dog d;
+Animal* ptr = &d; //Upcasting
+```
+- Works only if the object is actually a Dog. If it was 'Animal a', it would have been an undefined behaviour.
+- ptr is an Animal*, Now to go back to Dog*:
+```cpp
+Dog* dogPtr = static_cast<Dog*>(ptr);
+```
+
+
+

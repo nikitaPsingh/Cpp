@@ -610,3 +610,158 @@ T = const char*
 ```
 
 > **Note:** String literals are **not** `std::string`; they are character arrays that usually decay to pointers.
+
+# Pointers
+A pointer is a variable whose job is to store the memory address of another variable.
+### Example
+
+```cpp
+int x = 10;
+int* ptr = &x;
+```
+**NOTE**
+- x is a named variable.
+- ptr stores the address of x.
+```
+x -> 20 (Value)
+&x -> 1000 (Address of x)
+ptr -> 1000 (Stores the address)
+*ptr -> 20 (Value stored at that address)
+```
+
+```cpp
+int* ptr = new int(10);
+```
+- new int(10) → Creates an integer in memory, initializes it with 10, and returns its address.
+- int* ptr → Creates a pointer that can store the address of an int.
+- ptr = new int(10) → Stores the returned address in ptr.
+
+**NOTE**
+- There is no variable named x.
+- **new allocates memory in heap and returns its address**
+- The only way to access it is through ptr.
+  
+# Smart Pointers
+A smart pointer is a class template whose objects contain a raw pointer and manage the lifetime of dynamically allocated memory.
+
+Normal Pointer
+```
+int*
+```
+
+Smart Pointer
+```
+<unique_ptr>int
+```
+
+### Example
+
+Instead of 
+```cpp
+int* ptr = new int(10);
+
+delete ptr;
+```
+
+it becomes
+```cpp
+unique_ptr<int> ptr(new int(10));
+```
+- unique_ptr → class template provided by C++ standard library
+- unique_ptr<int> → class (created from the template)
+- p → object of the class unique_ptr<int>
+- Inside p → a raw pointer (int*) that points to heap memory
+
+## Types of Smart Pointer
+
+## 1. unique_ptr (one owner)
+Only ONE pointer can own the object.
+
+```cpp
+#include <memory>
+
+int main()
+{
+    std::unique_ptr<int> ptr(new int(10));
+}
+```
+
+Copy is not allowed
+```cpp
+unique_ptr<int> p1(new int(10));
+
+unique_ptr<int> p2 = p1;
+```
+Because in this case, we now have two pointers that own(it's their responsibility to delete that object) the object but we will be deleting only one of them which will cause memory leak.
+
+Instead
+```cpp
+unique_ptr<int> p2 = std::move(p1);
+```
+### Access Object
+```cpp
+unique_ptr<int> p(new int(5));
+
+cout << *p;
+
+//output 5
+```
+means
+"Go to the object that p points to and give me its value."
+
+**Member access**
+```cpp
+class Car
+{
+public:
+    void drive(){}
+};
+
+unique_ptr<Car> c(new Car());
+
+c->drive();
+```
+
+### make unique
+Instead of 
+```cpp
+unique_ptr<Car> c(new Car());
+```
+Use
+```cpp
+auto c = make_unique<Car>();
+```
+
+## 2. shared_ptr (many owner)
+Two pointers own the same object.
+```cpp
+auto p1 = make_shared<int>(10);
+
+auto p2 = p1;
+```
+Even if you destroy one pointer the object will still remain
+
+## 3. weak_ptr (Observer, No Ownership)
+A weak_ptr observes an object managed by shared_ptr but does not increase the reference count.
+```cpp
+shared_ptr<int> p = make_shared<int>(5);
+
+weak_ptr<int> w = p;
+```
+To break cyclic references created by shared_ptrs and avoid memory leaks.
+
+### Access weak ptr
+This is wrong
+```cpp
+*w;
+```
+Insted
+```cpp
+if (auto temp = w.lock())
+{
+    cout << *temp;
+}
+```
+lock() tries to create a temporary shared_ptr. If the object has already been destroyed, it returns an empty shared_ptr.
+
+

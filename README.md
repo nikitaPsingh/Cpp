@@ -642,7 +642,7 @@ int* ptr = new int(10);
 - The only way to access it is through ptr.
   
 # Smart Pointers
-A smart pointer is a class template whose objects contain a raw pointer and manage the lifetime of dynamically allocated memory.
+A class template that behaves like a pointer but automatically manages memory allocation and deallocation.
 
 Normal Pointer
 ```
@@ -764,4 +764,170 @@ if (auto temp = w.lock())
 ```
 lock() tries to create a temporary shared_ptr. If the object has already been destroyed, it returns an empty shared_ptr.
 
+# enum (Enumerations)
+An enum is an user defined data type. It contains a fixed list of constants.
 
+```cpp
+enum EnumName
+{
+    value1,
+    value2,
+    value3
+};
+```
+
+Example
+```cpp
+#include <iostream>
+using namespace std;
+
+enum Color
+{
+    Red,
+    Green,
+    Blue
+};
+
+int main()
+{
+    Color c = Green; // Creating variables and assigning values
+
+    if(c == Green)
+    {
+        cout << "Green selected";
+    }
+
+     cout << c; // outputs 2
+}
+
+// Output: Green selected
+```
+**NOTE**
+cout << c print an integer because that is how the compiler stores the integers. Here it stores Red, Green and Blue as 0, 1 and 2 respectively,
+
+### Assign your own values
+
+```cpp
+enum ErrorCode
+{
+    Success = 200,
+    NotFound = 404,
+    ServerError = 500
+};
+```
+
+### Mixed values
+
+```cpp
+enum Numbers
+{
+    A = 5,
+    B,
+    C,
+    D = 20,
+    E
+};
+```
+
+Compiler gives
+```cpp
+A = 5
+B = 6
+C = 7
+D = 20
+E = 21
+```
+
+### Converting enum to int
+```cpp
+Color c = Green;
+
+cout << (int)c;
+
+or
+
+cout << static_cast<int>(c);
+```
+Output
+```
+1
+```
+
+### Converting int to enum
+```cpp
+Color c = static_cast<Color>(2);
+```
+Now
+```
+c == blue
+```
+
+## enum class (Scoped enums)
+
+Problem:
+```cpp
+enum Color
+{
+    Red,
+    Green
+};
+
+enum Fruit
+{
+    Apple,
+    Mango
+};
+
+Color c = Red;
+Fruit f = Apple;
+
+if(c == f)
+```
+This compiles in older cpp because both of them have equal integer values but comparing a Fruit to a Color makes no sense.
+
+Another Problem:
+```cpp
+enum Color
+{
+    Red
+};
+
+enum Traffic
+{
+    Red
+};
+```
+Gives an error because both Red are in the same scope.
+
+Solution: enum class
+```cpp
+enum class Color
+{
+    Red,
+    Green,
+    Blue
+};
+```
+
+Example
+```cpp
+#include <iostream>
+using namespace std;
+
+enum class TrafficLight
+{
+    Red,
+    Yellow,
+    Green
+};
+
+int main()
+{
+    TrafficLight light = TrafficLight::Green;
+
+    if(light == TrafficLight::Green)
+    {
+        cout << "Go";
+    }
+}
+```

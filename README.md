@@ -852,7 +852,8 @@ Output
 ```
 1
 ```
-
+**NOTE**
+We need not convert enum to int in Old enum but in the new one(enum class), we need to convert it explicitly if needed.
 ### Converting int to enum
 ```cpp
 Color c = static_cast<Color>(2);

@@ -994,6 +994,7 @@ reinterpret_cast
 ```
 
 ## 1. static_cast
+Used for safe and well-defined conversions.
 #### int-> double
 ```cpp
 int x = 5;
@@ -1041,8 +1042,8 @@ cout << ch;
 //Output: B
 ```
 
-### static_cast in OOP
-#### Upcasting
+## static_cast in OOP
+### Upcasting
 Upcasting is the process of converting a derived class pointer/reference to a base class pointer/reference. 
 Example
 ```cpp
@@ -1078,10 +1079,10 @@ Animal* ptr = static_cast<Animal*>(&d);
 ```
 This is upcasting. The compiler automatically converts Dog* to Animal*.
 
-##### NOTE
+##### **NOTE**
 ptr->eat() is correct. ptr->bark() is wrong. Because compiler only ptr is an Animal*. Even though the object is actually a Dog, the pointer's type controls what members are directly accessible.
 
-#### Downcasting
+### Downcasting
 Downcasting is the process of converting a base class pointer/reference to a derived class pointer/reference.
 
 Upcasting
@@ -1098,11 +1099,139 @@ Suppose
 Dog d;
 Animal* ptr = &d; //Upcasting
 ```
-- Works only if the object is actually a Dog. If it was 'Animal a', it would have been an undefined behaviour.
+
 - ptr is an Animal*, Now to go back to Dog*:
 ```cpp
 Dog* dogPtr = static_cast<Dog*>(ptr);
 ```
 
+Works only if the object is actually a Dog. If it was 'Animal a', it would have been an undefined behaviour(since it is not checked by static_cast at runtime, so use dynamic_cast):
+  
+Unsafe Example
+```cpp
+Animal a;
 
+Animal* ptr = &a;
 
+Dog* dogPtr = static_cast<Dog*>(ptr);
+
+dogPtr->bark();   // ❌ Undefined behavior
+```
+To solve this we have dynamic_cast.
+
+## 2. dynamic_cast
+Used with polymorphism. It's the safest cast for base and derived classes.
+Example
+```cpp
+class Animal
+{
+public:
+    virtual void speak() {}
+};
+
+class Dog : public Animal
+{
+};
+```
+Now
+```cpp
+Animal* ptr = new Dog();
+```
+Convert
+```cpp
+Dog* d = dynamic_cast<Dog*>(ptr);
+```
+If successful (object is a Dog)
+```cpp
+d != nullptr
+```
+If not (oject is not a Dog)
+```cpp
+nullptr
+```
+Example 1
+```cpp
+Animal* ptr = new Animal();
+
+Dog* d = dynamic_cast<Dog*>(ptr);
+
+if(d == nullptr)
+    cout << "Failed";
+```
+It checks the object's type at runtime(which is Animal and not Dog) so d becomes nullptr.
+
+Example 2(succeeds)
+```cpp
+Animal* ptr = new Dog();
+
+Dog* d = dynamic_cast<Dog*>(ptr);
+```
+
+## 3. const_cast
+Removes or adds const
+```cpp
+const int x = 10;
+
+x = 20; //error
+```
+This variable 'x' cannot be modified.
+
+```cpp
+const int x = 10;
+
+const int* ptr = &x;
+
+*ptr = 20; //error
+```
+ptr points to a const int. Modifying *ptr gives an error because we are trying to modify a const object.
+
+Syntax
+```cpp
+const_cast<new_type>(expression)
+```
+Example
+```cpp
+const int x = 10;
+
+const int* p = &x; //pointer
+
+*p = 20; //error
+
+int* q = const_cast<int*>(p); //remove const qualifier from the pointer type
+```
+Now 
+```cpp
+*q
+```
+This compiles, but it is undefined behaviour because x is originally declared const. We have removed const from the pointer only. It does not make the object writable.
+
+Safe Example
+```cpp
+int x = 10;
+
+const int* p = &x;
+
+int* q = const_cast<int*>(p);
+
+*q = 20;
+
+cout << x; //output: 20
+```
+ **USE**:
+Interfacing with older APIs that incorrectly take a non-const pointer even though they don't modify the data.
+
+## 4. reinterpret_cast
+Tells the compiler
+```
+"Treat these bits as another type"
+```
+Example
+```cpp
+int x = 65;
+
+int* p = &x;
+
+char* c = reinterpret_cast<char*>(p);
+```
+
+This converts int pointer to char pointer. No data conversion happens. It is not safe at all.

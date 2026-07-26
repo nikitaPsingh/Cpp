@@ -1235,3 +1235,115 @@ char* c = reinterpret_cast<char*>(p);
 ```
 
 This converts int pointer to char pointer. No data conversion happens. It is not safe at all.
+
+# Virtual Destructor
+
+## Destructor
+A special function that is automatically called when an object is destroyed.
+
+Example
+```cpp
+class Animal
+{
+public:
+    ~Animal()
+    {
+        cout << "Animal destroyed\n";
+    }
+};
+
+int main()
+{
+Animal a;
+}
+```
+Output 
+```
+Animal destroyed
+```
+
+When main() ends, the object dies, so the destructor runs.
+
+## Virtual Destructor
+A virtual destructor is a destructor declared with the virtual keyword in a base class.
+
+### Why do we need it?
+If a derived object is deleted using a base class pointer, the base class destructor must be virtual. Otherwise, only the base destructor is called, and the derived destructor is skipped, which can cause resource leaks.
+
+### Without Virtual Destructor
+```cpp
+#include <iostream>
+using namespace std;
+
+class Animal
+{
+public:
+    ~Animal()
+    {
+        cout << "Animal destroyed\n";
+    }
+};
+
+class Dog : public Animal
+{
+public:
+    ~Dog()
+    {
+        cout << "Dog destroyed\n";
+    }
+};
+
+int main()
+{
+    Animal* ptr = new Dog();
+
+    delete ptr;
+}
+```
+Output
+```
+Animal destoryed
+```
+Dog's destructor is not called.
+
+### With Virtual Destructor
+```cpp
+#include <iostream>
+using namespace std;
+
+class Animal
+{
+public:
+    virtual ~Animal()
+    {
+        cout << "Animal destroyed\n";
+    }
+};
+
+class Dog : public Animal
+{
+public:
+    ~Dog()
+    {
+        cout << "Dog destroyed\n";
+    }
+};
+
+int main()
+{
+    Animal* ptr = new Dog();
+
+    delete ptr;
+}
+```
+Output
+```
+Dog destroyed
+Animal destroyed
+```
+
+**NOTE**
+- virtual enables runtime polymorphism for destructors.
+- Without a virtual destructor, deleting a derived object through a base pointer results in undefined behavior.
+- With a virtual destructor, the derived destructor executes first, followed by the base destructor.
+- Constructors cannot be virtual, but destructors can.

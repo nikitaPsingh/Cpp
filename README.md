@@ -1429,13 +1429,18 @@ s2.operator=(s1)
 ```
 means
 ```
-this---->s2
-```
-and
-```
+this---->s2 (same as s2.age)
 other---->s1
 ```
-So this->age is the same as s2.age
+
+Execution:
+
+1. Check this != &other (avoid self-assignment).
+2. Delete s2's old heap memory.
+3. Read the value from s1's heap (*other.age).
+4. Allocate new heap memory with that value (new int(...)).
+5. Make s2.age point to the new memory.
+6. Return *this (i.e., s2) so expressions like s3 = s2 = s1; work correctly.
 
 ## NOTE
 

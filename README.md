@@ -1453,6 +1453,7 @@ Execution:
 > If you implement one, you usually need all three.
 
 # Rule of Five C++
+
 If your class manages a resource (heap memory, file, socket, mutex, etc.) and you define any one of these five special member functions, you should usually define all five.
 1. Destructor
 2. Copy Constructor
@@ -1588,3 +1589,322 @@ std::move(s1) converts s1 into an rvalue reference, allowing the move constructo
 | `s2 = s1;` | Copy Assignment Operator |
 | `s2 = std::move(s1);` | Move Assignment Operator |
 
+# Threading
+
+## Thread
+- A thread is the **smallest unit of execution** inside a process.
+- Every C++ program starts with one **main thread**.
+- Multiple threads allow tasks to run concurrently.
+
+Threads inside the same process share:
+- Global variables
+- Heap memory
+- Static variables
+- Open files
+
+Each thread has its own:
+- Stack
+- Registers
+- Program counter (instruction pointer)
+
+This allows threads to call different functions and maintain their own local variables, while still accessing shared data.
+
+## Process vs Thread
+
+| Process | Thread |
+|---------|---------|
+| Independent program | Small execution unit inside a process |
+| Has its own memory | Shares memory with other threads |
+| Heavyweight | Lightweight |
+| Communication is slower | Communication is faster |
+
+## Why do we need threads?
+Without threads,
+```
+Download file
+↓
+Play music
+↓
+Update UI
+```
+
+With threads,
+```
+Download file
+        │
+Play music
+        │
+Update UI
+```
+## Single Thread
+```
+Start
+
+↓
+
+Task 1
+
+↓
+
+Task 2
+
+↓
+
+Task 3
+
+↓
+
+End
+```
+
+## Multiple Thread
+```
+        Task1
+       /
+
+Start
+
+       \
+
+        Task2
+
+       /
+
+        Task3
+```
+
+## Concurrency (Single CPU Core)
+The CPU quickly switches between threads.
+```
+Thread A
+Thread B
+Thread A
+Thread C
+Thread B
+Thread A
+```
+This switching happens so fast that it appears simultaneous.
+
+## Parallelism (Multiple CPU Cores)
+```
+Core 1 → Thread A
+Core 2 → Thread B
+Core 3 → Thread C
+```
+They truly execute simultaneously.
+
+## Main Thread
+```cpp
+int main()
+{
+    return 0;
+}
+```
+The thread executing main() is called the main thread.
+
+## Creating a Thread
+```cpp
+#include <iostream>
+#include <thread>
+
+using namespace std;
+
+void print()
+{
+    cout << "Hello from thread\n";
+}
+
+int main()
+{
+    thread t(print); // creates a new thread
+
+    t.join();
+}
+
+//output: Hello from thread
+```
+The new thread starts executing print() while the main thread also continues.
+
+### join()
+```cpp
+int main()
+{
+    thread t(print);
+
+    return 0;
+}
+```
+The main function ends but the thread may still be running.
+
+t.join() means wait until this thread finishes.
+```
+Main Thread
+      │
+ waits here
+      │
+Thread finishes
+      │
+Program exits
+```
+
+### detach()
+Instead of waiting, you can let the thread run independently.
+```cpp
+thread t(print);
+
+t.detach();
+```
+Now
+```
+Main Thread finishes
+
+Thread continues running
+```
+The thread is no longer associated with the std::thread object.
+
+## Passing Arguments
+```cpp
+void print(int x)
+{
+    cout << x;
+}
+
+int main()
+{
+    thread t(print, 10);
+
+    t.join();
+}
+
+//Output: 10
+```
+
+## Lambda Functions
+You don't always need another function.
+```cpp
+thread t([]()
+{
+    cout << "Hello";
+});
+
+t.join();
+```
+
+## Multiple Threads
+```cpp
+#include <iostream>
+#include <thread>
+
+using namespace std;
+
+void work(int id)
+{
+    cout << "Thread " << id << endl;
+}
+
+int main()
+{
+    thread t1(work,1);
+    thread t2(work,2);
+    thread t3(work,3);
+
+    t1.join();
+    t2.join();
+    t3.join();
+}
+```
+Output 
+```
+Thread 2
+Thread 1
+Thread 3
+
+or
+
+Thread 1
+Thread 3
+Thread 2
+...
+```
+The execution order is not guaranteed. It depends on the **operating system's scheduler**.
+
+**NOTE**
+1. Every thread has a unique ID.
+```cpp
+#include <iostream>
+#include <thread>
+
+void work()
+{
+    std::cout << std::this_thread::get_id() << '\n';
+}
+
+int main()
+{
+    std::thread t(work);
+
+    std::cout << std::this_thread::get_id() << '\n';
+
+    t.join();
+}
+```
+std::this_thread::get_id() returns the ID of the currently executing thread.
+
+2. **Sleeping a Thread**
+```cpp
+#include <chrono>
+#include <thread>
+
+std::this_thread::sleep_for(std::chrono::seconds(2));
+```
+The current thread pauses for 2 seconds.
+
+## Race Condition
+A race condition occurs when:
+- Multiple threads access the same data.
+- At least one thread modifies it.
+- There is no synchronization.
+
+Example
+Suppose
+```cpp
+int counter = 0;
+```
+Two threads execute
+```cpp
+counter++
+```
+1000 times each
+
+The expected output is 2000, But It changes every run:
+```
+1834
+1981
+1765
+2000
+```
+Since two threads interleave these steps, updates can be lost.
+
+## Mutex (Mutual exclusion)
+A mutex (mutual exclusion) protects shared resources. Only one thread can lock it at a time.
+```cpp
+std::mutex m;
+
+m.lock();
+
+counter++;
+
+m.unlock();
+```
+Now only one thread can execute the protected code at a time, preventing race conditions.
+
+## Lock Guard
+Manually calling lock() and unlock() is error-prone.
+
+Instead,
+```cpp
+std::lock_guard<std::mutex> lock(m);
+
+counter++;
+```
+When lock goes out of scope, the mutex is automatically unlocked.

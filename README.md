@@ -1451,3 +1451,140 @@ Execution:
 > **Destroy → Copy → Assign**
 >
 > If you implement one, you usually need all three.
+
+# Rule of Five C++
+If your class manages a resource (heap memory, file, socket, mutex, etc.) and you define any one of these five special member functions, you should usually define all five.
+1. Destructor
+2. Copy Constructor
+3. Copy Assignment Operator
+4. Move Constructor
+5. Move Assignment Operator
+
+C++11 introduced move semantics, so two more functions were added.
+
+Before C++11, copying was the only way to transfer objects. But later, we got to move semantics. 
+
+Instead of copying the resource, we cansimply transfer **ownership**.
+
+## Move Constructor
+Instead of copying, it steals the resource.
+
+Example
+```cpp
+Student(Student&& other)
+{
+    age = other.age;
+
+    other.age = nullptr;
+}
+```
+
+- Student&&: This is an **rvalue reference**. It means "I am receiving a temporary object whose resources can be taken."
+
+## Move Assignment Operator
+Suppose
+```cpp
+Student s1(10);
+Student s2(20);
+
+s2 = std::move(s1);
+```
+s2 already owns memory, we must first free it.
+
+Implementation
+```cpp
+Student& operator=(Student&& other)
+{
+    if(this != &other)
+    {
+        delete age;
+
+        age = other.age;
+
+        other.age = nullptr;
+    }
+
+    return *this;
+}
+```
+Ownership transferred. No copying.
+
+### Complete Example
+```cpp
+class Student
+{
+    int* age;
+
+public:
+
+    Student(int a)
+    {
+        age = new int(a);
+    }
+
+    ~Student()
+    {
+        delete age;
+    }
+
+    Student(const Student& other)
+    {
+        age = new int(*other.age);
+    }
+
+    Student& operator=(const Student& other)
+    {
+        if(this != &other)
+        {
+            delete age;
+            age = new int(*other.age);
+        }
+
+        return *this;
+    }
+
+    Student(Student&& other)
+    {
+        age = other.age;
+        other.age = nullptr;
+    }
+
+    Student& operator=(Student&& other)
+    {
+        if(this != &other)
+        {
+            delete age;
+
+            age = other.age;
+
+            other.age = nullptr;
+        }
+
+        return *this;
+    }
+};
+```
+
+## std::move()
+It simply tells the compiler:
+
+"Treat this object as one whose resources may be moved from."
+```cpp
+Student s1(20);
+
+Student s2 = std::move(s1);
+```
+std::move(s1) converts s1 into an rvalue reference, allowing the move constructor to be selected. The actual transfer of ownership happens inside the move constructor, not inside std::move().
+
+## When are these functions called?
+- **Creating a new object** → Constructor / Copy Constructor / Move Constructor
+- **Assigning to an existing object** → Copy Assignment / Move Assignment
+
+| Code | Function Called |
+|------|-----------------|
+| `Student s1(20);` | Constructor |
+| `Student s2 = s1;` | Copy Constructor |
+| `Student s3 = std::move(s1);` | Move Constructor |
+| `s2 = s1;` | Copy Assignment Operator |
+| `s2 = std::move(s1);` | Move Assignment Operator |
+

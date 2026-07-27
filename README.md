@@ -1347,3 +1347,102 @@ Animal destroyed
 - Without a virtual destructor, deleting a derived object through a base pointer results in undefined behavior.
 - With a virtual destructor, the derived destructor executes first, followed by the base destructor.
 - Constructors cannot be virtual, but destructors can.
+
+# Rule of Three
+
+For a Class to manage a resource(dynamically allocated memory), we need the following three special functions
+1. Destructor
+2. Copy Constructor
+3. Copy Assignment Operator
+
+## Why?
+The compiler performs a **shallow copy** by default.
+
+```cpp
+Student s1;
+Student s2 = s1;
+```
+
+Compiler does:
+
+```cpp
+s2.age = s1.age;   // Copies the pointer (address), not the data
+```
+
+Result:
+
+- 2 pointers
+- 1 heap object
+
+Both objects point to the same memory, so when both destructors call `delete`, it causes **double deletion (undefined behavior).**
+
+## Solution: Deep Copy
+Instead of copying the pointer, allocate new memory and copy the value.
+
+```cpp
+age = new int(*other.age);
+```
+
+Now each object owns its own memory.
+
+## The Three Functions
+
+### 1. Destructor
+Frees the owned resource.
+
+```cpp
+~Student()
+{
+    delete age;
+}
+```
+
+### 2. Copy Constructor
+Called when creating a new object from another object.
+
+```cpp
+Student(const Student& other)
+{
+    age = new int(*other.age);
+}
+```
+
+### 3. Copy Assignment Operator
+Called when assigning one existing object to another.
+
+```cpp
+Student& operator=(const Student& other)
+{
+    if (this != &other) //Using '&' gives its address. &oother means address of s1.
+    {
+        delete age;
+        age = new int(*other.age);
+    }
+    return *this;
+}
+```
+'this' is a special pointer automatically provided by C++. It points to the object that called the function.
+
+Here,
+```cpp
+s2.operator=(s1)
+```
+means
+```
+this---->s2
+```
+and
+```
+other---->s1
+```
+So this->age is the same as s2.age
+
+## NOTE
+
+- **Shallow Copy:** Copies the pointer (address).
+- **Deep Copy:** Copies the actual data into new memory.
+- Use the **Rule of Three** whenever a class directly manages resources (e.g., `new`/`delete`).
+
+> **Destroy → Copy → Assign**
+>
+> If you implement one, you usually need all three.

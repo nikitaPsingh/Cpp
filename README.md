@@ -1908,3 +1908,97 @@ std::lock_guard<std::mutex> lock(m);
 counter++;
 ```
 When lock goes out of scope, the mutex is automatically unlocked.
+
+# Pthreads (POSIX Threads)
+
+POSIX = Portable Operating System Interface
+
+> It is a standard API that allows programmers to create and manage threads in C/C++.
+
+Before C++11 introduced std::thread, Pthreads were the primary way to write multithreaded programs on Linux and Unix systems.
+
+## Thread Creation
+```cpp
+pthread_create()
+```
+Syntax
+```cpp
+pthread_create(
+    pthread_t* thread, //stores the thread ID
+    const pthread_attr_t* attr, // Thread attributes. Normally NULL meaning Use default settings
+    void* (*start_routine)(void*), // The functions that the new thread will execute
+    void* arg // Argument passed to the thread function. Can be 'NULL' or a pointer
+);
+```
+
+Example
+```cpp
+#include <iostream>
+#include <pthread.h>
+
+using namespace std;
+
+void* printMessage(void* arg) // This is C syntax. It is basically 'void work()' in C++
+{
+    cout << "Hello from thread\n";
+    return nullptr;
+}
+
+int main()
+{
+    pthread_t t;
+
+    pthread_create(&t, NULL, printMessage, NULL);
+
+    pthread_join(t, NULL);
+
+    return 0;
+}
+
+// Output: Hello from thread
+```
+Main thread executes
+> main()
+Then
+```cpp
+pthread_create()
+```
+The OS creates 
+```
+Main thread
+New thread
+```
+The new thread immediately begins running printMessage() while main() continues executing independently.
+
+## Passing Data
+
+```cpp
+void* print(void* arg)
+{
+    int* num = (int*)arg;
+
+    cout << *num;
+
+    return nullptr;
+}
+
+// Create thread
+int x = 10;
+
+pthread_create(&t, NULL, print, &x);
+```
+**The parameter void* is used because they can point to any type.**
+
+## Waiting for a Thread
+```cpp
+pthread_join()
+```
+Syntax
+```cpp
+pthread_join(thread, NULL);
+```
+Example
+```cpp
+pthread_join(t, NULL);
+```
+Without it main() might end before the thread finishes, terminating the process and all its threads.

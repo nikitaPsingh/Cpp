@@ -2002,3 +2002,76 @@ Example
 pthread_join(t, NULL);
 ```
 Without it main() might end before the thread finishes, terminating the process and all its threads.
+
+## Multiple Threads
+```cpp
+pthread_t t1;
+pthread_t t2;
+
+pthread_create(&t1, NULL, work1, NULL);
+
+pthread_create(&t2, NULL, work2, NULL);
+
+pthread_join(t1, NULL);
+pthread_join(t2, NULL);
+```
+Now two threads run concurrently
+
+## Detaching a Thread
+Instead of waiting 
+```cpp
+pthread_join()
+```
+detach the thread
+```cpp
+pthread_detach(t);
+```
+Now, 
+- the thread runs independently
+- its resources are automatically released when it finishes
+
+## Thread Exit
+Instead of 
+```cpp
+return nullptr;
+```
+a thread can explicitly wait
+```cpp
+pthread_exit(NULL);
+```
+This terminates only the calling thread, not the entire process.
+
+## Thread IDs
+Each thread has an ID
+
+Current thread
+```cpp
+pthread_self();
+```
+Compare thread IDs
+```cpp
+pthread_equal(id1, id2);
+```
+
+## pthread vs std:thread
+pthread
+```cpp
+void* work(void* arg)
+{
+    cout << "Hello\n";
+    return nullptr;
+}
+
+pthread_t t;
+pthread_create(&t, NULL, work, NULL);
+pthread_join(t, NULL);
+```
+std:thread
+```cpp
+void work()
+{
+    cout << "Hello\n";
+}
+
+std::thread t(work);
+t.join();
